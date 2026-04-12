@@ -1,0 +1,47 @@
+{
+  "name": "ib-central",
+  "version": "1.0.0",
+  "description": "IB Central - A desktop app for IB students to track grades, assignments, and resources",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux",
+    "test": "node test/run-tests.js"
+  },
+  "build": {
+    "appId": "com.ibcentral.app",
+    "productName": "IB Central",
+    "directories": {
+      "output": "dist"
+    },
+    "mac": {
+      "target": "dmg",
+      "category": "public.app-category.education"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "backend/**/*",
+      "frontend/**/*",
+      "package.json"
+    ]
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^39.8.1",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "sql.js": "^1.10.3"
+  }
+}
