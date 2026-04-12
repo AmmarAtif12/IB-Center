@@ -12,7 +12,7 @@ A desktop application for IB (International Baccalaureate) students to track the
 ## Tech Stack
 
 - **Frontend**: HTML, CSS, JavaScript (vanilla)
-- **Backend**: SQLite via `better-sqlite3` (embedded, no server required)
+- **Backend**: SQLite via `sql.js` (embedded, no server required)
 - **Desktop**: Electron
 - **Packaging**: electron-builder (`.dmg` for macOS, `.exe` for Windows, `.AppImage` for Linux)
 

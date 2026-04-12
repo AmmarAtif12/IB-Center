@@ -421,28 +421,41 @@
     }
 
     container.innerHTML = notes.map((n) => `
-      <div class="note-card">
+      <div class="note-card" data-note-id="${n.id}">
         <div class="note-card-header">
           <h4>${escapeHtml(n.title)}</h4>
           <div class="note-actions">
-            <button class="btn-icon" onclick="editNote(${n.id}, ${JSON.stringify(escapeHtml(n.title)).replace(/"/g, '&quot;')}, ${JSON.stringify(escapeHtml(n.content)).replace(/"/g, '&quot;')})" title="Edit">✏️</button>
+            <button class="btn-icon note-edit-btn" data-id="${n.id}" title="Edit">✏️</button>
             <button class="btn-icon" onclick="deleteNote(${n.id})" title="Delete">🗑️</button>
           </div>
         </div>
         <div class="note-card-content">${escapeHtml(n.content) || '<em style="color:var(--text-secondary)">No content</em>'}</div>
       </div>
     `).join('');
+
+    // Store raw note data for editing, keyed by id
+    const noteDataMap = {};
+    for (const n of notes) {
+      noteDataMap[n.id] = { title: n.title, content: n.content };
+    }
+    container.querySelectorAll('.note-edit-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const noteId = parseInt(btn.dataset.id);
+        const data = noteDataMap[noteId];
+        if (data) window.editNote(noteId, data.title, data.content);
+      });
+    });
   }
 
   window.editNote = function (id, title, content) {
     openModal('Edit Note', `
       <div class="form-group">
         <label>Title</label>
-        <input type="text" id="field-title" value="${title}" required />
+        <input type="text" id="field-title" required />
       </div>
       <div class="form-group">
         <label>Content</label>
-        <textarea id="field-content" rows="8">${content}</textarea>
+        <textarea id="field-content" rows="8"></textarea>
       </div>
     `, async () => {
       const newTitle = document.getElementById('field-title').value.trim();
@@ -454,6 +467,9 @@
       closeModal();
       loadNotes(currentSubjectId);
     });
+    // Set values programmatically to avoid HTML injection in attributes
+    document.getElementById('field-title').value = title;
+    document.getElementById('field-content').value = content;
   };
 
   window.deleteNote = async function (id) {
