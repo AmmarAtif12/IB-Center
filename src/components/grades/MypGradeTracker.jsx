@@ -163,7 +163,7 @@ export default function MypGradeTracker() {
                 >
                   <div className="text-white font-syne font-semibold text-xs leading-tight mb-1.5 truncate">{s.name}</div>
                   <div className="flex items-baseline gap-1">
-                    <span className="font-mono font-bold text-xl" style={{ color }}>
+                    <span className="font-mono font-bold text-xl" style={{ color: colour }}>
                       {s.grade !== null ? s.grade : '–'}
                     </span>
                     <span className="text-[#8b9dc3] text-xs font-mono">
