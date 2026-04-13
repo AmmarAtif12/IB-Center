@@ -13,7 +13,7 @@ export default function Step2Subjects({ subjects, setSubjects, programme, onBack
     }));
   };
   const add = () => {
-    if (subjects.length >= 8) return;
+    if (subjects.length >= 10) return;
     setSubjects(ss => [...ss, {
       id: crypto.randomUUID(),
       name: '',
@@ -98,7 +98,7 @@ export default function Step2Subjects({ subjects, setSubjects, programme, onBack
           </div>
         ))}
       </div>
-      <button onClick={add} disabled={subjects.length >= 8} className="w-full py-2.5 rounded-xl text-sm font-syne font-semibold text-blue-400 border border-blue-500/30 hover:border-blue-500 hover:bg-blue-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+      <button onClick={add} disabled={subjects.length >= 10} className="w-full py-2.5 rounded-xl text-sm font-syne font-semibold text-blue-400 border border-blue-500/30 hover:border-blue-500 hover:bg-blue-500/10 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
         + Add another subject
       </button>
       <div className="flex gap-3">
