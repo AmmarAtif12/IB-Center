@@ -101,7 +101,8 @@ export default function MypGradeTracker() {
   const subjects = state.subjects;
 
   const subjectSummaries = subjects.map(s => {
-    const subjectAssessments = (state.mypAssessments || {})[s.id] || {};
+    const raw = (state.mypAssessments || {})[s.id];
+    const subjectAssessments = (raw && typeof raw === 'object' && !Array.isArray(raw)) ? raw : {};
     const allCriteria = [0, 1, 2, 3].map(i => subjectAssessments[i] || []);
     const total = calcMypSubjectTotal(allCriteria);
     const grade = total !== null ? mypGradeFromTotal(total) : null;

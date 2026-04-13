@@ -9,6 +9,7 @@ import Planner from './components/planner/Planner';
 import CasTracker from './components/cas/CasTracker';
 import Settings from './components/settings/Settings';
 import BottomNav from './components/shared/BottomNav';
+import ErrorBoundary from './components/shared/ErrorBoundary';
 
 function AppInner() {
   const { state } = useApp();
@@ -31,7 +32,11 @@ function AppInner() {
 
       <div className="max-w-2xl mx-auto">
         {tab === 'home' && <Dashboard onNavigate={setTab} />}
-        {tab === 'grades' && (state.profile.programme === 'MYP' ? <MypGradeTracker /> : <GradeTracker />)}
+        {tab === 'grades' && (
+          <ErrorBoundary key="grades">
+            {state.profile.programme === 'MYP' ? <MypGradeTracker /> : <GradeTracker />}
+          </ErrorBoundary>
+        )}
         {tab === 'subjects' && <SubjectsHub />}
         {tab === 'planner' && <Planner />}
         {tab === 'cas' && <CasTracker />}

@@ -74,8 +74,9 @@ export const MYP_NEXT_BOUNDARIES = [6, 10, 15, 19, 24, 28];
 
 // Average the scored assessments for one criterion (0–8), rounded to nearest integer
 export function calcCriterionAvg(assessments) {
-  const scored = (assessments || []).filter(
-    a => a.score !== '' && a.score !== null && !isNaN(parseFloat(a.score))
+  const list = Array.isArray(assessments) ? assessments : [];
+  const scored = list.filter(
+    a => a && a.score !== '' && a.score !== null && !isNaN(parseFloat(a.score))
   );
   if (scored.length === 0) return null;
   const avg = scored.reduce((sum, a) => sum + Math.min(parseFloat(a.score), 8), 0) / scored.length;
@@ -84,9 +85,10 @@ export function calcCriterionAvg(assessments) {
 
 // Sum of rounded criterion averages (0–32). Returns null if none entered.
 export function calcMypSubjectTotal(criterionAssessments) {
+  const list = Array.isArray(criterionAssessments) ? criterionAssessments : [];
   let hasAny = false;
   let total = 0;
-  for (const assessments of criterionAssessments) {
+  for (const assessments of list) {
     const avg = calcCriterionAvg(assessments);
     if (avg !== null) { total += avg; hasAny = true; }
   }

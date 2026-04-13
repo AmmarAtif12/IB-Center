@@ -17,7 +17,7 @@ export default function Dashboard({ onNavigate }) {
   const subjectGrades = state.subjects.map(s => {
     let grade = null;
     if (isMYP) {
-      const subjectAssessments = state.mypAssessments[s.id] || {};
+      const subjectAssessments = (state.mypAssessments || {})[s.id] || {};
       const allCriteria = [0, 1, 2, 3].map(i => subjectAssessments[i] || []);
       const total = calcMypSubjectTotal(allCriteria);
       grade = total !== null ? mypGradeFromTotal(total) : null;
