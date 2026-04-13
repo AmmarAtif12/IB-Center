@@ -92,7 +92,7 @@ export default function PomodoroTimer({ subjectName, onClose }) {
         <div className="flex justify-center mb-6">
           <div className="relative w-36 h-36">
             <svg className="absolute inset-0 rotate-[-90deg]" width="144" height="144" viewBox="0 0 144 144">
-              <circle cx="72" cy="72" r={r} fill="none" stroke="#1e3058" strokeWidth="8" />
+              <circle cx="72" cy="72" r={r} fill="none" stroke="var(--c-border)" strokeWidth="8" />
               <circle
                 cx="72" cy="72" r={r} fill="none"
                 stroke={mode.colour}

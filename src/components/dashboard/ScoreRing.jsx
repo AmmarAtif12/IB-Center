@@ -21,7 +21,7 @@ export default function ScoreRing({ score, max = 45, label = 'Predicted Total' }
   return (
     <div className="flex flex-col items-center">
       <svg width="180" height="180" viewBox="0 0 180 180">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="#1e3058" strokeWidth="12" />
+        <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--c-border)" strokeWidth="12" />
         <circle
           cx={cx} cy={cy} r={r}
           fill="none"
@@ -33,8 +33,8 @@ export default function ScoreRing({ score, max = 45, label = 'Predicted Total' }
           transform={`rotate(-90 ${cx} ${cy})`}
           style={{ transition: 'stroke-dashoffset 1s ease-in-out, stroke 0.5s' }}
         />
-        <text x={cx} y={cy - 8} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="36" fontFamily="DM Mono, monospace" fontWeight="bold">{score}</text>
-        <text x={cx} y={cy + 22} textAnchor="middle" dominantBaseline="middle" fill="#8b9dc3" fontSize="14" fontFamily="DM Mono, monospace">/ {max}</text>
+        <text x={cx} y={cy - 8} textAnchor="middle" dominantBaseline="middle" fill="var(--c-text)" fontSize="36" fontFamily="DM Mono, monospace" fontWeight="bold">{score}</text>
+        <text x={cx} y={cy + 22} textAnchor="middle" dominantBaseline="middle" fill="var(--c-muted)" fontSize="14" fontFamily="DM Mono, monospace">/ {max}</text>
       </svg>
       <p className="text-[#8b9dc3] text-sm font-mono mt-1">{label}</p>
     </div>

@@ -56,11 +56,20 @@ body {
 [data-theme="light"] .bg-navy-900 { background-color: var(--c-bg-card) !important; }
 [data-theme="light"] .bg-navy-800 { background-color: var(--c-bg-input) !important; }
 [data-theme="light"] .bg-navy-700 { background-color: var(--c-border) !important; }
+[data-theme="light"] .bg-navy-600 { background-color: var(--c-border-md) !important; }
 [data-theme="light"] .border-navy-700 { border-color: var(--c-border) !important; }
 [data-theme="light"] .border-navy-800 { border-color: var(--c-border-md) !important; }
+[data-theme="light"] .border-navy-600 { border-color: var(--c-border-md) !important; }
 [data-theme="light"] .text-white { color: var(--c-text) !important; }
 [data-theme="light"] .text-\[\#8b9dc3\] { color: var(--c-muted) !important; }
 [data-theme="light"] .bg-navy-950\/95 { background-color: rgba(240,244,251,0.95) !important; }
+
+/* Hover state overrides for light mode */
+[data-theme="light"] .hover\:bg-navy-800:hover { background-color: var(--c-bg-input) !important; }
+[data-theme="light"] .hover\:bg-navy-700:hover { background-color: var(--c-border) !important; }
+[data-theme="light"] .hover\:bg-navy-600:hover { background-color: var(--c-border-md) !important; }
+[data-theme="light"] .hover\:border-navy-600:hover { border-color: var(--c-border-md) !important; }
+[data-theme="light"] .hover\:text-white:hover { color: var(--c-text) !important; }
 
 /* Apply font families */
 [data-font="crimson"] h1,
@@ -86,9 +95,9 @@ body {
   height: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: #111d35;
+  background: var(--c-bg-card);
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e3058;
+  background: var(--c-border);
   border-radius: 2px;
 }
