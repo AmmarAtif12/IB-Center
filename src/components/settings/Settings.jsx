@@ -16,6 +16,21 @@ export default function Settings({ onClose }) {
   });
   const [profile, setProfile] = useState({ ...state.profile });
 
+  const yearOptions = profile.programme === 'MYP'
+    ? ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5']
+    : ['Year 1', 'Year 2'];
+
+  const handleSettingsProgrammeChange = (prog) => {
+    const opts = prog === 'MYP'
+      ? ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5']
+      : ['Year 1', 'Year 2'];
+    setProfile(p => ({
+      ...p,
+      programme: prog,
+      year: opts.includes(p.year) ? p.year : opts[0],
+    }));
+  };
+
   const saveProfile = () => dispatch({ type: 'UPDATE_PROFILE', payload: profile });
 
   const handleReset = () => {
@@ -82,7 +97,7 @@ export default function Settings({ onClose }) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Programme</label>
-                <select className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500" value={profile.programme} onChange={e => setProfile(p => ({...p, programme: e.target.value}))}>
+                <select className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500" value={profile.programme} onChange={e => handleSettingsProgrammeChange(e.target.value)}>
                   <option value="DP">DP</option>
                   <option value="MYP">MYP</option>
                 </select>
@@ -90,8 +105,7 @@ export default function Settings({ onClose }) {
               <div>
                 <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Year</label>
                 <select className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500" value={profile.year} onChange={e => setProfile(p => ({...p, year: e.target.value}))}>
-                  <option>Year 1</option>
-                  <option>Year 2</option>
+                  {yearOptions.map(y => <option key={y}>{y}</option>)}
                 </select>
               </div>
             </div>

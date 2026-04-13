@@ -96,7 +96,7 @@ export default function MypSubjectCard({ subject, scrollId }) {
 
   const criterionNames = subject.criterionNames || DEFAULT_CRITERION_NAMES;
   // mypAssessments[subjectId][0..3] = array of assessments
-  const subjectAssessments = state.mypAssessments[subject.id] || {};
+  const subjectAssessments = (state.mypAssessments || {})[subject.id] || {};
 
   const getCriterionAssessments = (idx) => subjectAssessments[idx] || [];
 

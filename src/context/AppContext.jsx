@@ -24,13 +24,13 @@ function reducer(state, action) {
     case 'ADD_SUBJECT': return { ...state, subjects: [...state.subjects, action.subject] };
     case 'UPDATE_SUBJECT': return { ...state, subjects: state.subjects.map(s => s.id === action.subject.id ? action.subject : s) };
     case 'SET_MYP_ASSESSMENTS':
-      return { ...state, mypAssessments: { ...state.mypAssessments, [action.subjectId]: action.assessments } };
+      return { ...state, mypAssessments: { ...(state.mypAssessments || {}), [action.subjectId]: action.assessments } };
     case 'DELETE_SUBJECT': {
-      const { [action.id]: _gc, ...restGC } = state.gradeComponents;
-      const { [action.id]: _ma, ...restMA } = state.mypAssessments;
-      const { [action.id]: _n, ...restN } = state.notes;
-      const { [action.id]: _r, ...restR } = state.resources;
-      const { [action.id]: _c, ...restC } = state.checklist;
+      const { [action.id]: _gc, ...restGC } = state.gradeComponents || {};
+      const { [action.id]: _ma, ...restMA } = state.mypAssessments || {};
+      const { [action.id]: _n, ...restN } = state.notes || {};
+      const { [action.id]: _r, ...restR } = state.resources || {};
+      const { [action.id]: _c, ...restC } = state.checklist || {};
       return {
         ...state,
         subjects: state.subjects.filter(s => s.id !== action.id),
@@ -58,13 +58,35 @@ function reducer(state, action) {
   }
 }
 
+// Robustly merge saved localStorage state with defaultState.
+// Handles: missing keys, null/undefined values, wrong types, and missing profile sub-keys.
+function sanitizeLoadedState(saved) {
+  if (!saved || typeof saved !== 'object') return defaultState;
+  const isObj = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+  return {
+    ...defaultState,
+    ...saved,
+    // Deep-merge profile so new profile keys always exist
+    profile: isObj(saved.profile)
+      ? { ...defaultState.profile, ...saved.profile }
+      : defaultState.profile,
+    // Ensure array fields are always arrays
+    subjects:    Array.isArray(saved.subjects)    ? saved.subjects    : defaultState.subjects,
+    assignments: Array.isArray(saved.assignments) ? saved.assignments : defaultState.assignments,
+    casEntries:  Array.isArray(saved.casEntries)  ? saved.casEntries  : defaultState.casEntries,
+    // Ensure object fields are always plain objects (never null)
+    gradeComponents: isObj(saved.gradeComponents) ? saved.gradeComponents : {},
+    mypAssessments:  isObj(saved.mypAssessments)  ? saved.mypAssessments  : {},
+    notes:           isObj(saved.notes)           ? saved.notes           : {},
+    resources:       isObj(saved.resources)       ? saved.resources       : {},
+    checklist:       isObj(saved.checklist)       ? saved.checklist       : {},
+  };
+}
+
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
-  const saved = loadState();
-  // Merge saved state with defaultState so any keys added after initial release
-  // (e.g. mypAssessments) are always present even on old localStorage snapshots.
-  const [state, dispatch] = useReducer(reducer, saved ? { ...defaultState, ...saved } : defaultState);
+  const [state, dispatch] = useReducer(reducer, sanitizeLoadedState(loadState()));
 
   useEffect(() => {
     saveState(state);
