@@ -71,6 +71,14 @@ body {
 [data-theme="light"] .hover\:border-navy-600:hover { border-color: var(--c-border-md) !important; }
 [data-theme="light"] .hover\:text-white:hover { color: var(--c-text) !important; }
 
+/* Date input: ensure text is visible in both themes */
+input[type="date"] {
+  color-scheme: dark;
+}
+[data-theme="light"] input[type="date"] {
+  color-scheme: light;
+}
+
 /* Apply font families */
 [data-font="crimson"] h1,
 [data-font="crimson"] h2,

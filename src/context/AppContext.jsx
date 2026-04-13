@@ -11,9 +11,11 @@ const defaultState = {
   profile: { name: '', school: '', programme: 'DP', year: 'Year 1', examSession: '' },
   subjects: [],
   gradeComponents: {},
+  dpCriteria: {},   // { [subjectId]: [{ id, name, score, max }] }
   tokGrade: '',
   eeGrade: '',
   mypAssessments: {},  // { [subjectId]: { [criterionIdx 0-3]: [{ id, name, score }] } }
+  eeData: { meetings: [], resources: [] }, // Extended Essay tracker
   assignments: [],
   notes: {},
   resources: {},
@@ -33,6 +35,7 @@ function reducer(state, action) {
       return { ...state, mypAssessments: { ...(state.mypAssessments || {}), [action.subjectId]: action.assessments } };
     case 'DELETE_SUBJECT': {
       const { [action.id]: _gc, ...restGC } = state.gradeComponents || {};
+      const { [action.id]: _dc, ...restDC } = state.dpCriteria || {};
       const { [action.id]: _ma, ...restMA } = state.mypAssessments || {};
       const { [action.id]: _n, ...restN } = state.notes || {};
       const { [action.id]: _r, ...restR } = state.resources || {};
@@ -41,6 +44,7 @@ function reducer(state, action) {
         ...state,
         subjects: state.subjects.filter(s => s.id !== action.id),
         gradeComponents: restGC,
+        dpCriteria: restDC,
         mypAssessments: restMA,
         notes: restN,
         resources: restR,
@@ -49,6 +53,8 @@ function reducer(state, action) {
       };
     }
     case 'SET_GRADE_COMPONENTS': return { ...state, gradeComponents: { ...state.gradeComponents, [action.subjectId]: action.components } };
+    case 'SET_DP_CRITERIA': return { ...state, dpCriteria: { ...(state.dpCriteria || {}), [action.subjectId]: action.criteria } };
+    case 'SET_EE_DATA': return { ...state, eeData: action.data };
     case 'SET_SETTINGS': return { ...state, settings: { ...defaultSettings, ...state.settings, ...action.payload } };
     case 'SET_TOK_GRADE': return { ...state, tokGrade: action.value };
     case 'SET_EE_GRADE': return { ...state, eeGrade: action.value };
@@ -83,10 +89,18 @@ function sanitizeLoadedState(saved) {
     casEntries:  Array.isArray(saved.casEntries)  ? saved.casEntries  : defaultState.casEntries,
     // Ensure object fields are always plain objects (never null)
     gradeComponents: isObj(saved.gradeComponents) ? saved.gradeComponents : {},
+    dpCriteria:      isObj(saved.dpCriteria)      ? saved.dpCriteria      : {},
     mypAssessments:  isObj(saved.mypAssessments)  ? saved.mypAssessments  : {},
     notes:           isObj(saved.notes)           ? saved.notes           : {},
     resources:       isObj(saved.resources)       ? saved.resources       : {},
     checklist:       isObj(saved.checklist)       ? saved.checklist       : {},
+    // Ensure eeData is always a well-formed object
+    eeData: (isObj(saved.eeData))
+      ? {
+          meetings:  Array.isArray(saved.eeData.meetings)  ? saved.eeData.meetings  : [],
+          resources: Array.isArray(saved.eeData.resources) ? saved.eeData.resources : [],
+        }
+      : { meetings: [], resources: [] },
     // Ensure settings object is always present and well-formed
     settings: isObj(saved.settings)
       ? { ...defaultSettings, ...saved.settings }
