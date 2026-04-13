@@ -27,7 +27,8 @@ export default function AddAssignmentModal({ open, onClose, initial }) {
       estimatedTime: '',
       notes: '',
     });
-  }, [open]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, initial, state.subjects]);
 
   const save = () => {
     if (!form.title.trim()) return;
