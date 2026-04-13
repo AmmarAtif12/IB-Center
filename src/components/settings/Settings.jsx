@@ -247,6 +247,70 @@ export default function Settings({ onClose }) {
           </div>
         )}
 
+        {/* Personalization */}
+        <section className="mb-6">
+          <h2 className="font-syne font-semibold text-[#8b9dc3] text-xs uppercase tracking-wider font-mono mb-3">Personalization</h2>
+          <div className="bg-navy-900 border border-navy-700 rounded-2xl p-4 space-y-4">
+            {/* Custom heading */}
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Dashboard Heading</label>
+              <input
+                className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 text-sm placeholder-[#8b9dc3]"
+                placeholder={`${state.profile.name ? `Welcome back, ${state.profile.name}` : 'IB Central'}`}
+                value={state.settings?.heading || ''}
+                onChange={e => dispatch({ type: 'SET_SETTINGS', payload: { heading: e.target.value } })}
+              />
+              <p className="text-[10px] text-[#8b9dc3] mt-1 font-mono">Leave blank to use the default greeting.</p>
+            </div>
+
+            {/* Font picker */}
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-2">App Font</label>
+              <div className="flex gap-2">
+                {[
+                  { id: 'syne',    label: 'Syne',   desc: 'Modern' },
+                  { id: 'crimson', label: 'Crimson', desc: 'Academic' },
+                  { id: 'lora',    label: 'Lora',   desc: 'Scholarly' },
+                ].map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => dispatch({ type: 'SET_SETTINGS', payload: { font: f.id } })}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all flex flex-col items-center gap-0.5
+                      ${(state.settings?.font || 'syne') === f.id
+                        ? 'bg-blue-500/15 border-blue-500 text-blue-400'
+                        : 'bg-navy-800 border-navy-700 text-[#8b9dc3] hover:border-blue-500/50'}`}
+                  >
+                    <span>{f.label}</span>
+                    <span className="text-[10px] font-mono opacity-70">{f.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Theme toggle */}
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-2">Theme</label>
+              <div className="flex gap-2">
+                {[
+                  { id: 'dark',  label: '🌙 Dark' },
+                  { id: 'light', label: '☀️ Light' },
+                ].map(t => (
+                  <button
+                    key={t.id}
+                    onClick={() => dispatch({ type: 'SET_SETTINGS', payload: { theme: t.id } })}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all
+                      ${(state.settings?.theme || 'dark') === t.id
+                        ? 'bg-blue-500/15 border-blue-500 text-blue-400'
+                        : 'bg-navy-800 border-navy-700 text-[#8b9dc3] hover:border-blue-500/50'}`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Danger Zone */}
         <section className="mb-6">
           <h2 className="font-syne font-semibold text-red-400 text-xs uppercase tracking-wider font-mono mb-3">Danger Zone</h2>

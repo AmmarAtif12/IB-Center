@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { loadState, saveState } from '../utils/storage';
 
+const defaultSettings = {
+  theme: 'dark',        // 'dark' | 'light'
+  font: 'syne',         // 'syne' | 'crimson' | 'lora'
+  heading: '',          // custom dashboard heading
+};
+
 const defaultState = {
   onboarded: false,
   profile: { name: '', school: '', programme: 'DP', year: 'Year 1', examSession: '' },
@@ -14,6 +20,7 @@ const defaultState = {
   resources: {},
   checklist: {},
   casEntries: [],
+  settings: { ...defaultSettings },
 };
 
 function reducer(state, action) {
@@ -43,6 +50,7 @@ function reducer(state, action) {
       };
     }
     case 'SET_GRADE_COMPONENTS': return { ...state, gradeComponents: { ...state.gradeComponents, [action.subjectId]: action.components } };
+    case 'SET_SETTINGS': return { ...state, settings: { ...defaultSettings, ...state.settings, ...action.payload } };
     case 'SET_TOK_GRADE': return { ...state, tokGrade: action.value };
     case 'SET_EE_GRADE': return { ...state, eeGrade: action.value };
     case 'ADD_ASSIGNMENT': return { ...state, assignments: [...state.assignments, action.assignment] };
@@ -80,6 +88,10 @@ function sanitizeLoadedState(saved) {
     notes:           isObj(saved.notes)           ? saved.notes           : {},
     resources:       isObj(saved.resources)       ? saved.resources       : {},
     checklist:       isObj(saved.checklist)       ? saved.checklist       : {},
+    // Ensure settings object is always present and well-formed
+    settings: isObj(saved.settings)
+      ? { ...defaultSettings, ...saved.settings }
+      : { ...defaultSettings },
   };
 }
 

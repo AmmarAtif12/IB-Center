@@ -16,6 +16,15 @@ function AppInner() {
   const [tab, setTab] = useState('home');
   const [settingsOpen, setSettingsOpen] = useState(false);
 
+  const s = state.settings || {};
+
+  // Apply theme and font to root element
+  React.useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-theme', s.theme || 'dark');
+    root.setAttribute('data-font', s.font || 'syne');
+  }, [s.theme, s.font]);
+
   if (!state.onboarded) return <OnboardingFlow />;
 
   return (
