@@ -62,7 +62,9 @@ const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
   const saved = loadState();
-  const [state, dispatch] = useReducer(reducer, saved || defaultState);
+  // Merge saved state with defaultState so any keys added after initial release
+  // (e.g. mypAssessments) are always present even on old localStorage snapshots.
+  const [state, dispatch] = useReducer(reducer, saved ? { ...defaultState, ...saved } : defaultState);
 
   useEffect(() => {
     saveState(state);

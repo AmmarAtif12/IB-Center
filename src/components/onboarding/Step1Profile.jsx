@@ -1,8 +1,21 @@
 import React from 'react';
 
+const YEAR_OPTIONS = {
+  DP: ['Year 1', 'Year 2'],
+  MYP: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+};
+
 export default function Step1Profile({ profile, setProfile, onNext }) {
   const update = (k, v) => setProfile(p => ({ ...p, [k]: v }));
   const valid = profile.name.trim().length > 0;
+
+  const handleProgrammeChange = (prog) => {
+    const years = YEAR_OPTIONS[prog] || YEAR_OPTIONS.DP;
+    const currentYearValid = years.includes(profile.year);
+    setProfile(p => ({ ...p, programme: prog, year: currentYearValid ? p.year : years[0] }));
+  };
+
+  const yearOptions = YEAR_OPTIONS[profile.programme] || YEAR_OPTIONS.DP;
 
   return (
     <div className="bg-navy-900 rounded-2xl border border-navy-700 p-6 space-y-4">
@@ -32,7 +45,7 @@ export default function Step1Profile({ profile, setProfile, onNext }) {
             <select
               className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors"
               value={profile.programme}
-              onChange={e => update('programme', e.target.value)}
+              onChange={e => handleProgrammeChange(e.target.value)}
             >
               <option value="DP">DP</option>
               <option value="MYP">MYP</option>
@@ -45,8 +58,7 @@ export default function Step1Profile({ profile, setProfile, onNext }) {
               value={profile.year}
               onChange={e => update('year', e.target.value)}
             >
-              <option>Year 1</option>
-              <option>Year 2</option>
+              {yearOptions.map(y => <option key={y}>{y}</option>)}
             </select>
           </div>
         </div>
