@@ -1,75 +1,16 @@
-# IB Central
+# React + Vite
 
-A desktop application for IB (International Baccalaureate) students to track their academic progress.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Features
+Currently, two official plugins are available:
 
-- **Dashboard** – View your predicted DP score out of 45, with a visual ring indicator and per-subject breakdown
-- **Grade Tracker** – Record and track scores (1–7) for each subject across assessments
-- **Assignments Planner** – Manage assignments with due dates, completion tracking, and overdue alerts
-- **Subjects Hub** – Organize subjects with notes and resources for each one
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Tech Stack
+## React Compiler
 
-- **Frontend**: HTML, CSS, JavaScript (vanilla)
-- **Backend**: SQLite via `sql.js` (embedded, no server required)
-- **Desktop**: Electron
-- **Packaging**: electron-builder (`.dmg` for macOS, `.exe` for Windows, `.AppImage` for Linux)
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Design
+## Expanding the ESLint configuration
 
-Clean, modern dark blue colour scheme with smooth animations.
-
-## Getting Started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18+)
-- npm
-
-### Install Dependencies
-
-```bash
-npm install
-```
-
-### Run the Application
-
-```bash
-npm start
-```
-
-### Run Tests
-
-```bash
-npm test
-```
-
-### Build for Distribution
-
-```bash
-# macOS (.dmg)
-npm run build:mac
-
-# Windows
-npm run build:win
-
-# Linux
-npm run build:linux
-```
-
-## Project Structure
-
-```
-├── main.js              # Electron main process
-├── preload.js           # Secure IPC bridge
-├── backend/
-│   └── database.js      # SQLite database layer
-├── frontend/
-│   ├── index.html       # App UI
-│   ├── styles.css       # Dark blue theme styles
-│   └── renderer.js      # Frontend logic
-├── test/
-│   └── run-tests.js     # Database unit tests
-└── package.json         # Project config & build settings
-```
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
