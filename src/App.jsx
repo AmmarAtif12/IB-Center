@@ -7,7 +7,6 @@ import MypGradeTracker from './components/grades/MypGradeTracker';
 import SubjectsHub from './components/subjects/SubjectsHub';
 import Planner from './components/planner/Planner';
 import CasTracker from './components/cas/CasTracker';
-import Resources from './components/resources/Resources';
 import Settings from './components/settings/Settings';
 import BottomNav from './components/shared/BottomNav';
 import ErrorBoundary from './components/shared/ErrorBoundary';
@@ -40,7 +39,6 @@ function AppInner() {
         )}
         {tab === 'subjects' && <SubjectsHub />}
         {tab === 'planner' && <Planner />}
-        {tab === 'resources' && <Resources />}
         {tab === 'cas' && <CasTracker />}
       </div>
 

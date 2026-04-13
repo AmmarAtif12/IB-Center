@@ -5,7 +5,6 @@ const tabs = [
   { id: 'grades', label: 'Grades', icon: '📊' },
   { id: 'subjects', label: 'Subjects', icon: '📚' },
   { id: 'planner', label: 'Planner', icon: '📅' },
-  { id: 'resources', label: 'Resources', icon: '🔗' },
   { id: 'cas', label: 'CAS', icon: '🏃' },
 ];
 
