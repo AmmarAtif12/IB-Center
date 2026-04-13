@@ -109,3 +109,66 @@ input[type="date"] {
   background: var(--c-border);
   border-radius: 2px;
 }
+
+/* ─── Liquid Glass mode ─── */
+[data-glass="true"] {
+  --glass-bg:      rgba(255, 255, 255, 0.06);
+  --glass-border:  rgba(255, 255, 255, 0.14);
+  --glass-blur:    16px;
+  --glass-shadow:  0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="light"][data-glass="true"] {
+  --glass-bg:      rgba(255, 255, 255, 0.55);
+  --glass-border:  rgba(180, 200, 240, 0.60);
+  --glass-blur:    18px;
+  --glass-shadow:  0 4px 24px rgba(100, 130, 200, 0.18);
+}
+
+/* Glass nav bar */
+[data-glass="true"] .glass-nav {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border-top-color: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+}
+
+/* Glass cards (.bg-navy-900 used everywhere for cards) */
+[data-glass="true"] .bg-navy-900 {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+}
+
+/* Glass sticky headers */
+[data-glass="true"] .bg-navy-950\/95 {
+  background: rgba(10, 22, 40, 0.55) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+}
+[data-theme="light"][data-glass="true"] .bg-navy-950\/95 {
+  background: rgba(240, 244, 251, 0.60) !important;
+}
+
+/* Glass input fields */
+[data-glass="true"] .bg-navy-800 {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+[data-theme="light"][data-glass="true"] .bg-navy-800 {
+  background: rgba(255, 255, 255, 0.70) !important;
+}
+
+/* Iridescent border shimmer (subtle rainbow rim on cards) */
+[data-glass="true"] .border-navy-700 {
+  border-color: var(--glass-border) !important;
+}
+
+/* Settings panel in glass mode */
+[data-glass="true"] .bg-navy-950 {
+  background: var(--c-bg-base) !important;
+}

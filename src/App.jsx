@@ -23,7 +23,8 @@ function AppInner() {
     const root = document.documentElement;
     root.setAttribute('data-theme', s.theme || 'dark');
     root.setAttribute('data-font', s.font || 'syne');
-  }, [s.theme, s.font]);
+    root.setAttribute('data-glass', s.glassMode ? 'true' : 'false');
+  }, [s.theme, s.font, s.glassMode]);
 
   if (!state.onboarded) return <OnboardingFlow />;
 

@@ -296,6 +296,50 @@ export default function Settings({ onClose }) {
                 ))}
               </div>
             </div>
+
+            {/* Liquid Glass toggle */}
+            <div className="flex items-center justify-between py-1">
+              <div>
+                <p className="text-sm text-white font-semibold">💎 Liquid Glass</p>
+                <p className="text-xs text-[#8b9dc3] font-mono mt-0.5">Frosted glass cards & nav bar</p>
+              </div>
+              <button
+                onClick={() => dispatch({ type: 'SET_SETTINGS', payload: { glassMode: !(state.settings?.glassMode) } })}
+                className={`relative w-12 h-6 rounded-full border transition-all flex-shrink-0 ${
+                  state.settings?.glassMode
+                    ? 'bg-blue-500 border-blue-400'
+                    : 'bg-navy-800 border-navy-700'
+                }`}
+                aria-label="Toggle liquid glass mode"
+              >
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                  state.settings?.glassMode ? 'left-[calc(100%-1.375rem)]' : 'left-0.5'
+                }`} />
+              </button>
+            </div>
+
+            {/* Nav bar size */}
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-2">Bottom Bar Size</label>
+              <div className="flex gap-2">
+                {[
+                  { id: 'compact', label: 'Compact' },
+                  { id: 'normal',  label: 'Normal'  },
+                  { id: 'large',   label: 'Large'   },
+                ].map(n => (
+                  <button
+                    key={n.id}
+                    onClick={() => dispatch({ type: 'SET_SETTINGS', payload: { navSize: n.id } })}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all
+                      ${(state.settings?.navSize || 'normal') === n.id
+                        ? 'bg-blue-500/15 border-blue-500 text-blue-400'
+                        : 'bg-navy-800 border-navy-700 text-[#8b9dc3] hover:border-blue-500/50'}`}
+                  >
+                    {n.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 

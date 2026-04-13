@@ -4,6 +4,8 @@ import { loadState, saveState } from '../utils/storage';
 const defaultSettings = {
   theme: 'dark',        // 'dark' | 'light'
   font: 'syne',         // 'syne' | 'crimson' | 'lora'
+  glassMode: false,     // liquid-glass visual mode
+  navSize: 'normal',    // 'compact' | 'normal' | 'large'
 };
 
 const defaultState = {
