@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { SUBJECT_COLOURS, GROUPS } from '../../utils/grades';
+import { SUBJECT_COLOURS, GROUPS, DEFAULT_CRITERION_NAMES } from '../../utils/grades';
 import { clearState } from '../../utils/storage';
 
 export default function Settings({ onClose }) {
   const { state, dispatch } = useApp();
-  const [resetConfirm, setResetConfirm] = useState(0); // 0=idle, 1=first confirm, 2=second confirm
+  const isMYP = state.profile.programme === 'MYP';
+  const [resetConfirm, setResetConfirm] = useState(0);
   const [editSubject, setEditSubject] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   const [addingSubject, setAddingSubject] = useState(false);
-  const [newSubject, setNewSubject] = useState({ name: '', level: 'SL', group: '1', colour: SUBJECT_COLOURS[0] });
+  const [newSubject, setNewSubject] = useState({
+    name: '', level: 'SL', group: '1', colour: SUBJECT_COLOURS[0],
+    criterionNames: [...DEFAULT_CRITERION_NAMES],
+  });
   const [profile, setProfile] = useState({ ...state.profile });
 
   const saveProfile = () => dispatch({ type: 'UPDATE_PROFILE', payload: profile });
@@ -35,8 +39,24 @@ export default function Settings({ onClose }) {
   const addSubject = () => {
     if (!newSubject.name.trim()) return;
     dispatch({ type: 'ADD_SUBJECT', subject: { ...newSubject, id: crypto.randomUUID() } });
-    setNewSubject({ name: '', level: 'SL', group: '1', colour: SUBJECT_COLOURS[0] });
+    setNewSubject({ name: '', level: 'SL', group: '1', colour: SUBJECT_COLOURS[0], criterionNames: [...DEFAULT_CRITERION_NAMES] });
     setAddingSubject(false);
+  };
+
+  const updateEditCriterion = (idx, val) => {
+    setEditSubject(es => {
+      const names = [...(es.criterionNames || DEFAULT_CRITERION_NAMES)];
+      names[idx] = val;
+      return { ...es, criterionNames: names };
+    });
+  };
+
+  const updateNewCriterion = (idx, val) => {
+    setNewSubject(n => {
+      const names = [...(n.criterionNames || DEFAULT_CRITERION_NAMES)];
+      names[idx] = val;
+      return { ...n, criterionNames: names };
+    });
   };
 
   return (
@@ -92,15 +112,37 @@ export default function Settings({ onClose }) {
                 {editSubject?.id === s.id ? (
                   <div className="space-y-3">
                     <input className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500" value={editSubject.name} onChange={e => setEditSubject(es => ({...es, name: e.target.value}))} />
-                    <div className="flex gap-2">
-                      {['SL','HL'].map(lvl => (
-                        <button key={lvl} onClick={() => setEditSubject(es => ({...es, level: lvl}))} className={`px-4 py-1.5 rounded-lg text-xs font-mono font-semibold border transition-all ${editSubject.level === lvl ? 'bg-blue-500 border-blue-500 text-white' : 'bg-navy-800 border-navy-700 text-[#8b9dc3]'}`}>{lvl}</button>
-                      ))}
-                      <select className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500" value={editSubject.group} onChange={e => setEditSubject(es => ({...es, group: e.target.value}))}>
-                        {GROUPS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
-                      </select>
-                    </div>
-                    <div className="flex gap-1.5">
+
+                    {/* DP-only: level + group */}
+                    {!isMYP && (
+                      <div className="flex gap-2">
+                        {['SL','HL'].map(lvl => (
+                          <button key={lvl} onClick={() => setEditSubject(es => ({...es, level: lvl}))} className={`px-4 py-1.5 rounded-lg text-xs font-mono font-semibold border transition-all ${editSubject.level === lvl ? 'bg-blue-500 border-blue-500 text-white' : 'bg-navy-800 border-navy-700 text-[#8b9dc3]'}`}>{lvl}</button>
+                        ))}
+                        <select className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500" value={editSubject.group} onChange={e => setEditSubject(es => ({...es, group: e.target.value}))}>
+                          {GROUPS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
+                        </select>
+                      </div>
+                    )}
+
+                    {/* MYP-only: criterion names */}
+                    {isMYP && (
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-mono text-[#8b9dc3]">Criterion names <span className="opacity-60">(optional)</span></p>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {[0,1,2,3].map(idx => (
+                            <input key={idx}
+                              className="bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white placeholder-[#8b9dc3] focus:outline-none focus:border-blue-500 text-xs"
+                              placeholder={DEFAULT_CRITERION_NAMES[idx]}
+                              value={(editSubject.criterionNames || DEFAULT_CRITERION_NAMES)[idx]}
+                              onChange={e => updateEditCriterion(idx, e.target.value)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex gap-1.5 flex-wrap">
                       {SUBJECT_COLOURS.map(c => (
                         <button key={c} onClick={() => setEditSubject(es => ({...es, colour: c}))} className={`w-6 h-6 rounded-full border-2 transition-all ${editSubject.colour === c ? 'border-white scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />
                       ))}
@@ -115,9 +157,12 @@ export default function Settings({ onClose }) {
                     <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: s.colour }} />
                     <div className="flex-1">
                       <span className="text-white font-semibold text-sm">{s.name}</span>
-                      <span className="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-navy-800 text-[#8b9dc3]">{s.level}</span>
+                      {!isMYP && <span className="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-navy-800 text-[#8b9dc3]">{s.level}</span>}
                     </div>
-                    <button onClick={() => setEditSubject({...s})} className="text-[#8b9dc3] hover:text-white text-sm px-2">✏️</button>
+                    <button onClick={() => setEditSubject({
+                      ...s,
+                      criterionNames: s.criterionNames || [...DEFAULT_CRITERION_NAMES],
+                    })} className="text-[#8b9dc3] hover:text-white text-sm px-2">✏️</button>
                     <button onClick={() => setDeleteConfirm(s)} className="text-[#8b9dc3] hover:text-red-400 text-sm px-2">🗑️</button>
                   </div>
                 )}
@@ -127,15 +172,37 @@ export default function Settings({ onClose }) {
             {addingSubject ? (
               <div className="bg-navy-900 border border-navy-700 rounded-2xl p-4 space-y-3">
                 <input className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 placeholder-[#8b9dc3]" placeholder="Subject name" value={newSubject.name} onChange={e => setNewSubject(n => ({...n, name: e.target.value}))} />
-                <div className="flex gap-2">
-                  {['SL','HL'].map(lvl => (
-                    <button key={lvl} onClick={() => setNewSubject(n => ({...n, level: lvl}))} className={`px-4 py-1.5 rounded-lg text-xs font-mono font-semibold border transition-all ${newSubject.level === lvl ? 'bg-blue-500 border-blue-500 text-white' : 'bg-navy-800 border-navy-700 text-[#8b9dc3]'}`}>{lvl}</button>
-                  ))}
-                  <select className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500" value={newSubject.group} onChange={e => setNewSubject(n => ({...n, group: e.target.value}))}>
-                    {GROUPS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
-                  </select>
-                </div>
-                <div className="flex gap-1.5">
+
+                {/* DP-only */}
+                {!isMYP && (
+                  <div className="flex gap-2">
+                    {['SL','HL'].map(lvl => (
+                      <button key={lvl} onClick={() => setNewSubject(n => ({...n, level: lvl}))} className={`px-4 py-1.5 rounded-lg text-xs font-mono font-semibold border transition-all ${newSubject.level === lvl ? 'bg-blue-500 border-blue-500 text-white' : 'bg-navy-800 border-navy-700 text-[#8b9dc3]'}`}>{lvl}</button>
+                    ))}
+                    <select className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500" value={newSubject.group} onChange={e => setNewSubject(n => ({...n, group: e.target.value}))}>
+                      {GROUPS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                {/* MYP-only */}
+                {isMYP && (
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-mono text-[#8b9dc3]">Criterion names <span className="opacity-60">(optional)</span></p>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {[0,1,2,3].map(idx => (
+                        <input key={idx}
+                          className="bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white placeholder-[#8b9dc3] focus:outline-none focus:border-blue-500 text-xs"
+                          placeholder={DEFAULT_CRITERION_NAMES[idx]}
+                          value={(newSubject.criterionNames || DEFAULT_CRITERION_NAMES)[idx]}
+                          onChange={e => updateNewCriterion(idx, e.target.value)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-1.5 flex-wrap">
                   {SUBJECT_COLOURS.map(c => (
                     <button key={c} onClick={() => setNewSubject(n => ({...n, colour: c}))} className={`w-6 h-6 rounded-full border-2 transition-all ${newSubject.colour === c ? 'border-white scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />
                   ))}
@@ -157,7 +224,7 @@ export default function Settings({ onClose }) {
             <div className="absolute inset-0 bg-black/70" onClick={() => setDeleteConfirm(null)} />
             <div className="relative bg-navy-900 border border-navy-700 rounded-2xl p-6 max-w-sm w-full">
               <h3 className="font-syne font-bold text-white mb-2">Delete {deleteConfirm.name}?</h3>
-              <p className="text-[#8b9dc3] text-sm mb-4">Deleting <strong className="text-white">{deleteConfirm.name}</strong> will also delete all its grade components, notes, resources, and checklist items. Are you sure?</p>
+              <p className="text-[#8b9dc3] text-sm mb-4">Deleting <strong className="text-white">{deleteConfirm.name}</strong> will also delete all its grade data, notes, resources, and checklist items. Are you sure?</p>
               <div className="flex gap-3">
                 <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl bg-navy-800 text-[#8b9dc3] font-semibold hover:bg-navy-700 transition-all">Cancel</button>
                 <button onClick={() => confirmDelete(deleteConfirm.id)} className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 text-white font-semibold transition-all">Delete</button>
@@ -198,3 +265,4 @@ export default function Settings({ onClose }) {
     </div>
   );
 }
+

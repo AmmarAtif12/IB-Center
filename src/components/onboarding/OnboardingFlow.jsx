@@ -33,7 +33,7 @@ export default function OnboardingFlow() {
           ))}
         </div>
         {step === 1 && <Step1Profile profile={profile} setProfile={setProfile} onNext={() => setStep(2)} />}
-        {step === 2 && <Step2Subjects subjects={subjects} setSubjects={setSubjects} onBack={() => setStep(1)} onNext={() => setStep(3)} />}
+        {step === 2 && <Step2Subjects subjects={subjects} setSubjects={setSubjects} programme={profile.programme} onBack={() => setStep(1)} onNext={() => setStep(3)} />}
         {step === 3 && <Step3Confirm profile={profile} subjects={subjects} onBack={() => setStep(2)} onFinish={handleFinish} />}
       </div>
     </div>

@@ -1,22 +1,48 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import ScoreRing from './ScoreRing';
-import { calcSubjectGrade, tokEeBonus, gradeColour } from '../../utils/grades';
+import {
+  calcSubjectGrade, tokEeBonus, gradeColour,
+  calcMypSubjectTotal, mypGradeFromTotal,
+} from '../../utils/grades';
 import AddAssignmentModal from '../planner/AddAssignmentModal';
 
 export default function Dashboard({ onNavigate }) {
   const { state, dispatch } = useApp();
   const [showAdd, setShowAdd] = useState(false);
 
+  const isMYP = state.profile.programme === 'MYP';
+
+  // Build per-subject grades depending on programme
   const subjectGrades = state.subjects.map(s => {
-    const comps = state.gradeComponents[s.id] || [];
-    const grade = calcSubjectGrade(comps);
+    let grade = null;
+    if (isMYP) {
+      const subjectAssessments = state.mypAssessments[s.id] || {};
+      const allCriteria = [0, 1, 2, 3].map(i => subjectAssessments[i] || []);
+      const total = calcMypSubjectTotal(allCriteria);
+      grade = total !== null ? mypGradeFromTotal(total) : null;
+    } else {
+      grade = calcSubjectGrade(state.gradeComponents[s.id] || []);
+    }
     return { ...s, grade };
   });
 
-  const bonus = tokEeBonus(state.tokGrade, state.eeGrade);
-  const subTotal = subjectGrades.reduce((sum, s) => sum + (s.grade || 0), 0);
-  const total = subTotal + (bonus || 0);
+  // Score ring: DP shows /45, MYP shows average grade /7
+  let ringScore, ringMax, ringLabel;
+  if (isMYP) {
+    const scored = subjectGrades.filter(s => s.grade !== null);
+    ringScore = scored.length > 0
+      ? Math.round(scored.reduce((sum, s) => sum + s.grade, 0) / scored.length)
+      : 0;
+    ringMax = 7;
+    ringLabel = 'Avg Grade';
+  } else {
+    const bonus = tokEeBonus(state.tokGrade, state.eeGrade);
+    const subTotal = subjectGrades.reduce((sum, s) => sum + (s.grade || 0), 0);
+    ringScore = subTotal + (bonus || 0);
+    ringMax = 45;
+    ringLabel = 'Predicted DP Score';
+  }
 
   const today = new Date();
   const upcoming = state.assignments
@@ -26,8 +52,7 @@ export default function Dashboard({ onNavigate }) {
 
   const daysLeft = (dateStr) => {
     if (!dateStr) return null;
-    const diff = Math.ceil((new Date(dateStr) - today) / 86400000);
-    return diff;
+    return Math.ceil((new Date(dateStr) - today) / 86400000);
   };
 
   return (
@@ -36,24 +61,26 @@ export default function Dashboard({ onNavigate }) {
         <h1 className="font-syne font-extrabold text-2xl text-white">
           Hi, {state.profile.name || 'Student'} 👋
         </h1>
-        <p className="text-[#8b9dc3] text-sm mt-0.5">{state.profile.examSession ? `Exam: ${state.profile.examSession}` : 'IB Central'}</p>
+        <p className="text-[#8b9dc3] text-sm mt-0.5">
+          {state.profile.programme} · {state.profile.examSession ? `Exam: ${state.profile.examSession}` : 'IB Central'}
+        </p>
       </div>
 
       <div className="flex justify-center py-4">
-        <ScoreRing score={total} max={45} />
+        <ScoreRing score={ringScore} max={ringMax} label={ringLabel} />
       </div>
 
       {subjectGrades.length > 0 && (
         <div className="px-4 mb-6">
           <h2 className="font-syne font-semibold text-white mb-3">Subjects</h2>
-          <div className="flex gap-3 overflow-x-auto pb-2 -mx-0 scrollbar-hide">
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
             {subjectGrades.map(s => (
               <div
                 key={s.id}
                 className="flex-shrink-0 bg-navy-900 border border-navy-700 rounded-2xl p-4 w-36"
                 style={{ borderLeftColor: s.colour, borderLeftWidth: 3 }}
               >
-                <div className="text-xs text-[#8b9dc3] font-mono mb-1">{s.level}</div>
+                {!isMYP && <div className="text-xs text-[#8b9dc3] font-mono mb-1">{s.level}</div>}
                 <div className="text-white font-syne font-semibold text-sm leading-tight mb-2 truncate">{s.name}</div>
                 <div className="font-mono font-bold text-2xl" style={{ color: s.grade ? gradeColour(s.grade) : '#8b9dc3' }}>
                   {s.grade ?? '–'}

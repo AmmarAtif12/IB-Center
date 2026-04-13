@@ -3,6 +3,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import OnboardingFlow from './components/onboarding/OnboardingFlow';
 import Dashboard from './components/dashboard/Dashboard';
 import GradeTracker from './components/grades/GradeTracker';
+import MypGradeTracker from './components/grades/MypGradeTracker';
 import SubjectsHub from './components/subjects/SubjectsHub';
 import Planner from './components/planner/Planner';
 import CasTracker from './components/cas/CasTracker';
@@ -30,7 +31,7 @@ function AppInner() {
 
       <div className="max-w-2xl mx-auto">
         {tab === 'home' && <Dashboard onNavigate={setTab} />}
-        {tab === 'grades' && <GradeTracker />}
+        {tab === 'grades' && (state.profile.programme === 'MYP' ? <MypGradeTracker /> : <GradeTracker />)}
         {tab === 'subjects' && <SubjectsHub />}
         {tab === 'planner' && <Planner />}
         {tab === 'cas' && <CasTracker />}

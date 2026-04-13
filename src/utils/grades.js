@@ -57,6 +57,44 @@ export function gradeColour(grade) {
   return '#ef4444';
 }
 
+// ── MYP Grading ──
+// Boundaries: 1–5=G1, 6–9=G2, 10–14=G3, 15–18=G4, 19–23=G5, 24–27=G6, 28–32=G7
+export function mypGradeFromTotal(total) {
+  if (total >= 28) return 7;
+  if (total >= 24) return 6;
+  if (total >= 19) return 5;
+  if (total >= 15) return 4;
+  if (total >= 10) return 3;
+  if (total >= 6) return 2;
+  return 1;
+}
+
+// MYP_NEXT_BOUNDARIES[g-1] = score needed to reach grade g+1 (for g 1–6)
+export const MYP_NEXT_BOUNDARIES = [6, 10, 15, 19, 24, 28];
+
+// Average the scored assessments for one criterion (0–8), rounded to nearest integer
+export function calcCriterionAvg(assessments) {
+  const scored = (assessments || []).filter(
+    a => a.score !== '' && a.score !== null && !isNaN(parseFloat(a.score))
+  );
+  if (scored.length === 0) return null;
+  const avg = scored.reduce((sum, a) => sum + Math.min(parseFloat(a.score), 8), 0) / scored.length;
+  return Math.round(avg);
+}
+
+// Sum of rounded criterion averages (0–32). Returns null if none entered.
+export function calcMypSubjectTotal(criterionAssessments) {
+  let hasAny = false;
+  let total = 0;
+  for (const assessments of criterionAssessments) {
+    const avg = calcCriterionAvg(assessments);
+    if (avg !== null) { total += avg; hasAny = true; }
+  }
+  return hasAny ? total : null;
+}
+
+export const DEFAULT_CRITERION_NAMES = ['Criterion A', 'Criterion B', 'Criterion C', 'Criterion D'];
+
 export const CAS_LOS = [
   { id: 'LO1', label: 'LO1', desc: 'Identify own strengths and develop areas for growth' },
   { id: 'LO2', label: 'LO2', desc: 'Demonstrate that challenges have been undertaken' },

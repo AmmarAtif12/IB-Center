@@ -8,6 +8,7 @@ const defaultState = {
   gradeComponents: {},
   tokGrade: '',
   eeGrade: '',
+  mypAssessments: {},  // { [subjectId]: { [criterionIdx 0-3]: [{ id, name, score }] } }
   assignments: [],
   notes: {},
   resources: {},
@@ -22,8 +23,11 @@ function reducer(state, action) {
     case 'UPDATE_PROFILE': return { ...state, profile: { ...state.profile, ...action.payload } };
     case 'ADD_SUBJECT': return { ...state, subjects: [...state.subjects, action.subject] };
     case 'UPDATE_SUBJECT': return { ...state, subjects: state.subjects.map(s => s.id === action.subject.id ? action.subject : s) };
+    case 'SET_MYP_ASSESSMENTS':
+      return { ...state, mypAssessments: { ...state.mypAssessments, [action.subjectId]: action.assessments } };
     case 'DELETE_SUBJECT': {
       const { [action.id]: _gc, ...restGC } = state.gradeComponents;
+      const { [action.id]: _ma, ...restMA } = state.mypAssessments;
       const { [action.id]: _n, ...restN } = state.notes;
       const { [action.id]: _r, ...restR } = state.resources;
       const { [action.id]: _c, ...restC } = state.checklist;
@@ -31,6 +35,7 @@ function reducer(state, action) {
         ...state,
         subjects: state.subjects.filter(s => s.id !== action.id),
         gradeComponents: restGC,
+        mypAssessments: restMA,
         notes: restN,
         resources: restR,
         checklist: restC,

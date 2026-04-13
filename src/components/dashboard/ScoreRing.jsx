@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-export default function ScoreRing({ score, max = 45 }) {
+export default function ScoreRing({ score, max = 45, label = 'Predicted Total' }) {
   const [animated, setAnimated] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setAnimated(true), 100);
@@ -36,7 +36,7 @@ export default function ScoreRing({ score, max = 45 }) {
         <text x={cx} y={cy - 8} textAnchor="middle" dominantBaseline="middle" fill="white" fontSize="36" fontFamily="DM Mono, monospace" fontWeight="bold">{score}</text>
         <text x={cx} y={cy + 22} textAnchor="middle" dominantBaseline="middle" fill="#8b9dc3" fontSize="14" fontFamily="DM Mono, monospace">/ {max}</text>
       </svg>
-      <p className="text-[#8b9dc3] text-sm font-mono mt-1">Predicted Total</p>
+      <p className="text-[#8b9dc3] text-sm font-mono mt-1">{label}</p>
     </div>
   );
 }
