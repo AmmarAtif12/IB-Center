@@ -144,7 +144,10 @@ export default function CalendarView() {
       <div className="px-4 pt-4">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-syne font-semibold text-white">
-            {selectedDate === todayStr ? 'Today' : new Date(selectedDate + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}
+            {selectedDate === todayStr ? 'Today' : (() => {
+              const [y, m, d] = selectedDate.split('-').map(Number);
+              return new Date(y, m - 1, d).toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+            })()}
           </span>
           <button
             onClick={() => openAddForDate(selectedDate)}
