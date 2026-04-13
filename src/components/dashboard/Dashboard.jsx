@@ -59,7 +59,7 @@ export default function Dashboard({ onNavigate }) {
     <div className="pb-20">
       <div className="px-4 pt-6 pb-4">
         <h1 className="font-syne font-extrabold text-2xl text-white">
-          {state.settings?.heading || `Hi, ${state.profile.name || 'Student'} 👋`}
+          {`Hi, ${state.profile.name || 'Student'} 👋`}
         </h1>
         <p className="text-[#8b9dc3] text-sm mt-0.5">
           {state.profile.programme} · {state.profile.examSession ? `Exam: ${state.profile.examSession}` : 'IB Central'}

@@ -251,18 +251,6 @@ export default function Settings({ onClose }) {
         <section className="mb-6">
           <h2 className="font-syne font-semibold text-[#8b9dc3] text-xs uppercase tracking-wider font-mono mb-3">Personalization</h2>
           <div className="bg-navy-900 border border-navy-700 rounded-2xl p-4 space-y-4">
-            {/* Custom heading */}
-            <div>
-              <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Dashboard Heading</label>
-              <input
-                className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 text-sm placeholder-[#8b9dc3]"
-                placeholder={`${state.profile.name ? `Welcome back, ${state.profile.name}` : 'IB Central'}`}
-                value={state.settings?.heading || ''}
-                onChange={e => dispatch({ type: 'SET_SETTINGS', payload: { heading: e.target.value } })}
-              />
-              <p className="text-[10px] text-[#8b9dc3] mt-1 font-mono">Leave blank to use the default greeting.</p>
-            </div>
-
             {/* Font picker */}
             <div>
               <label className="block text-xs text-[#8b9dc3] font-mono mb-2">App Font</label>

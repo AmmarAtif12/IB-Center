@@ -4,7 +4,6 @@ import { loadState, saveState } from '../utils/storage';
 const defaultSettings = {
   theme: 'dark',        // 'dark' | 'light'
   font: 'syne',         // 'syne' | 'crimson' | 'lora'
-  heading: '',          // custom dashboard heading
 };
 
 const defaultState = {
