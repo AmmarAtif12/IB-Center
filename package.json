@@ -54,7 +54,10 @@
       "category": "public.app-category.education"
     },
     "win": {
-      "target": "nsis"
+      "target": {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
     },
     "linux": {
       "target": "AppImage"
