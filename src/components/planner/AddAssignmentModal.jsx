@@ -5,6 +5,15 @@ import Modal from '../shared/Modal';
 const TYPES = ['Test', 'IA Draft', 'Essay', 'Assignment', 'Other'];
 const PRIORITIES = ['High', 'Medium', 'Low'];
 
+// Generate 24 hour options in 12-hour AM/PM format.
+// Stored value is 24-hour "HH:00" string; label is locale-friendly 12h format.
+const TIME_OPTIONS = Array.from({ length: 24 }, (_, h) => {
+  const date = new Date(2000, 0, 1, h, 0, 0);
+  const label = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+  const value = String(h).padStart(2, '0') + ':00';
+  return { label, value };
+});
+
 export default function AddAssignmentModal({ open, onClose, initial }) {
   const { state, dispatch } = useApp();
   const [form, setForm] = useState(() => initial || {
@@ -12,6 +21,7 @@ export default function AddAssignmentModal({ open, onClose, initial }) {
     title: '',
     type: 'Assignment',
     dueDate: '',
+    dueTime: '',
     priority: 'Medium',
     estimatedTime: '',
     notes: '',
@@ -23,6 +33,7 @@ export default function AddAssignmentModal({ open, onClose, initial }) {
       title: '',
       type: 'Assignment',
       dueDate: '',
+      dueTime: '',
       priority: 'Medium',
       estimatedTime: '',
       notes: '',
@@ -68,6 +79,15 @@ export default function AddAssignmentModal({ open, onClose, initial }) {
         <div>
           <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Due Date</label>
           <input type="date" className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500" value={form.dueDate} onChange={e => up('dueDate', e.target.value)} />
+        </div>
+        <div>
+          <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Due Time</label>
+          <select className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500" value={form.dueTime} onChange={e => up('dueTime', e.target.value)}>
+            <option value="">No due time</option>
+            {TIME_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Estimated Time</label>

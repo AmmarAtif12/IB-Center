@@ -98,7 +98,12 @@ export default function Planner() {
                         <div className={`font-syne font-semibold text-sm ${a.completed ? 'line-through text-[#8b9dc3]' : 'text-white'}`}>{a.title}</div>
                         {a.dueDate && (
                           <div className={`text-xs font-mono mt-1 ${overdue ? 'text-red-400' : urgent ? 'text-amber-400' : 'text-[#8b9dc3]'}`}>
-                            {overdue ? '⚠️ Overdue' : `Due ${new Date(a.dueDate).toLocaleDateString()}`}
+                            {overdue ? '⚠️ Overdue' : `Due ${new Date(a.dueDate + 'T00:00:00').toLocaleDateString()}`}
+                            {a.dueTime && (() => {
+                              const [h, m] = a.dueTime.split(':').map(Number);
+                              const t = new Date(2000, 0, 1, h, m);
+                              return ` at ${t.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}`;
+                            })()}
                             {!overdue && days !== null && ` · ${days}d left`}
                           </div>
                         )}
