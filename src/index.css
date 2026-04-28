@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design-token CSS variables ─── */
+:root {
+  --c-bg-base:    #0a1628;
+  --c-bg-card:    #111d35;
+  --c-bg-input:   #162040;
+  --c-border:     #1e3058;
+  --c-border-md:  #243a6d;
+  --c-text:       #e8ecf4;
+  --c-muted:      #8b9dc3;
+  --c-body-font:  'Syne', sans-serif;
+  --c-head-font:  'Syne', sans-serif;
+}
+
+/* Light mode overrides */
+[data-theme="light"] {
+  --c-bg-base:   #f0f4fb;
+  --c-bg-card:   #ffffff;
+  --c-bg-input:  #e8eef8;
+  --c-border:    #c5d3e8;
+  --c-border-md: #b0c0da;
+  --c-text:      #0d1b33;
+  --c-muted:     #4a6080;
+}
+
+/* Academic font variants */
+[data-font="crimson"] {
+  --c-body-font: 'Crimson Pro', Georgia, serif;
+  --c-head-font: 'Crimson Pro', Georgia, serif;
+}
+[data-font="lora"] {
+  --c-body-font: 'Lora', Georgia, serif;
+  --c-head-font: 'Lora', Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--c-bg-base);
+  color: var(--c-text);
+  font-family: var(--c-body-font);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+/* Apply theme vars to Tailwind navy utilities */
+[data-theme="light"] .bg-navy-950 { background-color: var(--c-bg-base) !important; }
+[data-theme="light"] .bg-navy-900 { background-color: var(--c-bg-card) !important; }
+[data-theme="light"] .bg-navy-800 { background-color: var(--c-bg-input) !important; }
+[data-theme="light"] .bg-navy-700 { background-color: var(--c-border) !important; }
+[data-theme="light"] .bg-navy-600 { background-color: var(--c-border-md) !important; }
+[data-theme="light"] .border-navy-700 { border-color: var(--c-border) !important; }
+[data-theme="light"] .border-navy-800 { border-color: var(--c-border-md) !important; }
+[data-theme="light"] .border-navy-600 { border-color: var(--c-border-md) !important; }
+[data-theme="light"] .text-white { color: var(--c-text) !important; }
+[data-theme="light"] .text-\[\#8b9dc3\] { color: var(--c-muted) !important; }
+[data-theme="light"] .bg-navy-950\/95 { background-color: rgba(240,244,251,0.95) !important; }
+
+/* Hover state overrides for light mode */
+[data-theme="light"] .hover\:bg-navy-800:hover { background-color: var(--c-bg-input) !important; }
+[data-theme="light"] .hover\:bg-navy-700:hover { background-color: var(--c-border) !important; }
+[data-theme="light"] .hover\:bg-navy-600:hover { background-color: var(--c-border-md) !important; }
+[data-theme="light"] .hover\:border-navy-600:hover { border-color: var(--c-border-md) !important; }
+[data-theme="light"] .hover\:text-white:hover { color: var(--c-text) !important; }
+
+/* Date input: ensure text is visible in both themes */
+input[type="date"] {
+  color-scheme: dark;
+}
+[data-theme="light"] input[type="date"] {
+  color-scheme: light;
+}
+
+/* Apply font families */
+[data-font="crimson"] h1,
+[data-font="crimson"] h2,
+[data-font="crimson"] h3,
+[data-font="crimson"] .font-syne { font-family: 'Crimson Pro', Georgia, serif !important; }
+[data-font="lora"] h1,
+[data-font="lora"] h2,
+[data-font="lora"] h3,
+[data-font="lora"] .font-syne { font-family: 'Lora', Georgia, serif !important; }
+[data-font="crimson"] body,
+[data-font="crimson"] p,
+[data-font="crimson"] span,
+[data-font="crimson"] div { font-family: 'Crimson Pro', Georgia, serif; }
+[data-font="lora"] body,
+[data-font="lora"] p,
+[data-font="lora"] span,
+[data-font="lora"] div { font-family: 'Lora', Georgia, serif; }
+
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--c-bg-card);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--c-border);
+  border-radius: 2px;
+}
+
+/* ─── Liquid Glass mode ─── */
+[data-glass="true"] {
+  --glass-bg:      rgba(255, 255, 255, 0.06);
+  --glass-border:  rgba(255, 255, 255, 0.14);
+  --glass-blur:    16px;
+  --glass-shadow:  0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="light"][data-glass="true"] {
+  --glass-bg:      rgba(255, 255, 255, 0.55);
+  --glass-border:  rgba(180, 200, 240, 0.60);
+  --glass-blur:    18px;
+  --glass-shadow:  0 4px 24px rgba(100, 130, 200, 0.18);
+}
+
+/* Glass nav bar */
+[data-glass="true"] .glass-nav {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+  border-top-color: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+}
+
+/* Glass cards (.bg-navy-900 used everywhere for cards) */
+[data-glass="true"] .bg-navy-900 {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  border-color: var(--glass-border) !important;
+  box-shadow: var(--glass-shadow);
+}
+
+/* Glass sticky headers */
+[data-glass="true"] .bg-navy-950\/95 {
+  background: rgba(10, 22, 40, 0.55) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+}
+[data-theme="light"][data-glass="true"] .bg-navy-950\/95 {
+  background: rgba(240, 244, 251, 0.60) !important;
+}
+
+/* Glass input fields */
+[data-glass="true"] .bg-navy-800 {
+  background: rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+[data-theme="light"][data-glass="true"] .bg-navy-800 {
+  background: rgba(255, 255, 255, 0.70) !important;
+}
+
+/* Iridescent border shimmer (subtle rainbow rim on cards) */
+[data-glass="true"] .border-navy-700 {
+  border-color: var(--glass-border) !important;
+}
+
+/* Settings panel in glass mode */
+[data-glass="true"] .bg-navy-950 {
+  background: var(--c-bg-base) !important;
+}

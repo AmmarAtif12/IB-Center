@@ -1,0 +1,378 @@
+import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
+import { SUBJECT_COLOURS, GROUPS, DEFAULT_CRITERION_NAMES } from '../../utils/grades';
+import { clearState } from '../../utils/storage';
+
+export default function Settings({ onClose }) {
+  const { state, dispatch } = useApp();
+  const isMYP = state.profile.programme === 'MYP';
+  const [resetConfirm, setResetConfirm] = useState(0);
+  const [editSubject, setEditSubject] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [addingSubject, setAddingSubject] = useState(false);
+  const [newSubject, setNewSubject] = useState({
+    name: '', level: 'SL', group: '1', colour: SUBJECT_COLOURS[0],
+    criterionNames: [...DEFAULT_CRITERION_NAMES],
+  });
+  const [profile, setProfile] = useState({ ...state.profile });
+
+  const yearOptions = profile.programme === 'MYP'
+    ? ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5']
+    : ['Year 1', 'Year 2'];
+
+  const handleSettingsProgrammeChange = (prog) => {
+    const opts = prog === 'MYP'
+      ? ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5']
+      : ['Year 1', 'Year 2'];
+    setProfile(p => ({
+      ...p,
+      programme: prog,
+      year: opts.includes(p.year) ? p.year : opts[0],
+    }));
+  };
+
+  const saveProfile = () => dispatch({ type: 'UPDATE_PROFILE', payload: profile });
+
+  const handleReset = () => {
+    if (resetConfirm === 0) { setResetConfirm(1); return; }
+    if (resetConfirm === 1) { setResetConfirm(2); return; }
+    clearState();
+    dispatch({ type: 'RESET' });
+  };
+
+  const saveSubject = () => {
+    if (!editSubject.name.trim()) return;
+    dispatch({ type: 'UPDATE_SUBJECT', subject: editSubject });
+    setEditSubject(null);
+  };
+
+  const confirmDelete = (id) => {
+    dispatch({ type: 'DELETE_SUBJECT', id });
+    setDeleteConfirm(null);
+  };
+
+  const addSubject = () => {
+    if (!newSubject.name.trim()) return;
+    dispatch({ type: 'ADD_SUBJECT', subject: { ...newSubject, id: crypto.randomUUID() } });
+    setNewSubject({ name: '', level: 'SL', group: '1', colour: SUBJECT_COLOURS[0], criterionNames: [...DEFAULT_CRITERION_NAMES] });
+    setAddingSubject(false);
+  };
+
+  const updateEditCriterion = (idx, val) => {
+    setEditSubject(es => {
+      const names = [...(es.criterionNames || DEFAULT_CRITERION_NAMES)];
+      names[idx] = val;
+      return { ...es, criterionNames: names };
+    });
+  };
+
+  const updateNewCriterion = (idx, val) => {
+    setNewSubject(n => {
+      const names = [...(n.criterionNames || DEFAULT_CRITERION_NAMES)];
+      names[idx] = val;
+      return { ...n, criterionNames: names };
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 bg-navy-950 overflow-y-auto">
+      <div className="max-w-2xl mx-auto px-4 pt-6 pb-20">
+        <div className="flex items-center gap-3 mb-6">
+          <button onClick={onClose} className="text-[#8b9dc3] hover:text-white text-lg">← Back</button>
+          <h1 className="font-syne font-extrabold text-2xl text-white">Settings</h1>
+        </div>
+
+        {/* Profile */}
+        <section className="mb-6">
+          <h2 className="font-syne font-semibold text-[#8b9dc3] text-xs uppercase tracking-wider font-mono mb-3">Profile</h2>
+          <div className="bg-navy-900 border border-navy-700 rounded-2xl p-4 space-y-3">
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Name</label>
+              <input className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 text-sm" value={profile.name} onChange={e => setProfile(p => ({...p, name: e.target.value}))} />
+            </div>
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-1">School</label>
+              <input className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 text-sm" value={profile.school} onChange={e => setProfile(p => ({...p, school: e.target.value}))} />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Programme</label>
+                <select className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500" value={profile.programme} onChange={e => handleSettingsProgrammeChange(e.target.value)}>
+                  <option value="DP">DP</option>
+                  <option value="MYP">MYP</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Year</label>
+                <select className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2.5 text-white text-sm focus:outline-none focus:border-blue-500" value={profile.year} onChange={e => setProfile(p => ({...p, year: e.target.value}))}>
+                  {yearOptions.map(y => <option key={y}>{y}</option>)}
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Exam Session</label>
+              <input className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-blue-500 text-sm" value={profile.examSession} onChange={e => setProfile(p => ({...p, examSession: e.target.value}))} />
+            </div>
+            <button onClick={saveProfile} className="w-full py-2.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-syne font-semibold text-sm transition-all">Save Profile</button>
+          </div>
+        </section>
+
+        {/* Subjects */}
+        <section className="mb-6">
+          <h2 className="font-syne font-semibold text-[#8b9dc3] text-xs uppercase tracking-wider font-mono mb-3">Subjects</h2>
+          <div className="space-y-2">
+            {state.subjects.map(s => (
+              <div key={s.id} className="bg-navy-900 border border-navy-700 rounded-2xl p-4">
+                {editSubject?.id === s.id ? (
+                  <div className="space-y-3">
+                    <input className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500" value={editSubject.name} onChange={e => setEditSubject(es => ({...es, name: e.target.value}))} />
+
+                    {/* DP-only: level + group */}
+                    {!isMYP && (
+                      <div className="flex gap-2">
+                        {['SL','HL'].map(lvl => (
+                          <button key={lvl} onClick={() => setEditSubject(es => ({...es, level: lvl}))} className={`px-4 py-1.5 rounded-lg text-xs font-mono font-semibold border transition-all ${editSubject.level === lvl ? 'bg-blue-500 border-blue-500 text-white' : 'bg-navy-800 border-navy-700 text-[#8b9dc3]'}`}>{lvl}</button>
+                        ))}
+                        <select className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500" value={editSubject.group} onChange={e => setEditSubject(es => ({...es, group: e.target.value}))}>
+                          {GROUPS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
+                        </select>
+                      </div>
+                    )}
+
+                    {/* MYP-only: criterion names */}
+                    {isMYP && (
+                      <div className="space-y-1.5">
+                        <p className="text-xs font-mono text-[#8b9dc3]">Criterion names <span className="opacity-60">(optional)</span></p>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {[0,1,2,3].map(idx => (
+                            <input key={idx}
+                              className="bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white placeholder-[#8b9dc3] focus:outline-none focus:border-blue-500 text-xs"
+                              placeholder={DEFAULT_CRITERION_NAMES[idx]}
+                              value={(editSubject.criterionNames || DEFAULT_CRITERION_NAMES)[idx]}
+                              onChange={e => updateEditCriterion(idx, e.target.value)}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex gap-1.5 flex-wrap">
+                      {SUBJECT_COLOURS.map(c => (
+                        <button key={c} onClick={() => setEditSubject(es => ({...es, colour: c}))} className={`w-6 h-6 rounded-full border-2 transition-all ${editSubject.colour === c ? 'border-white scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={saveSubject} className="flex-1 py-2 rounded-xl text-sm bg-blue-500 hover:bg-blue-400 text-white font-semibold transition-all">Save</button>
+                      <button onClick={() => setEditSubject(null)} className="flex-1 py-2 rounded-xl text-sm bg-navy-700 text-[#8b9dc3] hover:bg-navy-600 transition-all">Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: s.colour }} />
+                    <div className="flex-1">
+                      <span className="text-white font-semibold text-sm">{s.name}</span>
+                      {!isMYP && <span className="ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded bg-navy-800 text-[#8b9dc3]">{s.level}</span>}
+                    </div>
+                    <button onClick={() => setEditSubject({
+                      ...s,
+                      criterionNames: s.criterionNames || [...DEFAULT_CRITERION_NAMES],
+                    })} className="text-[#8b9dc3] hover:text-white text-sm px-2">✏️</button>
+                    <button onClick={() => setDeleteConfirm(s)} className="text-[#8b9dc3] hover:text-red-400 text-sm px-2">🗑️</button>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            {addingSubject ? (
+              <div className="bg-navy-900 border border-navy-700 rounded-2xl p-4 space-y-3">
+                <input className="w-full bg-navy-800 border border-navy-700 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-500 placeholder-[#8b9dc3]" placeholder="Subject name" value={newSubject.name} onChange={e => setNewSubject(n => ({...n, name: e.target.value}))} />
+
+                {/* DP-only */}
+                {!isMYP && (
+                  <div className="flex gap-2">
+                    {['SL','HL'].map(lvl => (
+                      <button key={lvl} onClick={() => setNewSubject(n => ({...n, level: lvl}))} className={`px-4 py-1.5 rounded-lg text-xs font-mono font-semibold border transition-all ${newSubject.level === lvl ? 'bg-blue-500 border-blue-500 text-white' : 'bg-navy-800 border-navy-700 text-[#8b9dc3]'}`}>{lvl}</button>
+                    ))}
+                    <select className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white text-xs focus:outline-none focus:border-blue-500" value={newSubject.group} onChange={e => setNewSubject(n => ({...n, group: e.target.value}))}>
+                      {GROUPS.map(g => <option key={g.value} value={g.value}>{g.label}</option>)}
+                    </select>
+                  </div>
+                )}
+
+                {/* MYP-only */}
+                {isMYP && (
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-mono text-[#8b9dc3]">Criterion names <span className="opacity-60">(optional)</span></p>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {[0,1,2,3].map(idx => (
+                        <input key={idx}
+                          className="bg-navy-800 border border-navy-700 rounded-lg px-2 py-1.5 text-white placeholder-[#8b9dc3] focus:outline-none focus:border-blue-500 text-xs"
+                          placeholder={DEFAULT_CRITERION_NAMES[idx]}
+                          value={(newSubject.criterionNames || DEFAULT_CRITERION_NAMES)[idx]}
+                          onChange={e => updateNewCriterion(idx, e.target.value)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-1.5 flex-wrap">
+                  {SUBJECT_COLOURS.map(c => (
+                    <button key={c} onClick={() => setNewSubject(n => ({...n, colour: c}))} className={`w-6 h-6 rounded-full border-2 transition-all ${newSubject.colour === c ? 'border-white scale-110' : 'border-transparent'}`} style={{ backgroundColor: c }} />
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={addSubject} className="flex-1 py-2 rounded-xl text-sm bg-blue-500 hover:bg-blue-400 text-white font-semibold transition-all">Add Subject</button>
+                  <button onClick={() => setAddingSubject(false)} className="flex-1 py-2 rounded-xl text-sm bg-navy-700 text-[#8b9dc3] hover:bg-navy-600 transition-all">Cancel</button>
+                </div>
+              </div>
+            ) : (
+              <button onClick={() => setAddingSubject(true)} className="w-full py-2.5 rounded-xl text-sm text-blue-400 border border-blue-500/30 hover:border-blue-500 hover:bg-blue-500/10 transition-all font-syne">+ Add subject</button>
+            )}
+          </div>
+        </section>
+
+        {/* Delete confirmation */}
+        {deleteConfirm && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/70" onClick={() => setDeleteConfirm(null)} />
+            <div className="relative bg-navy-900 border border-navy-700 rounded-2xl p-6 max-w-sm w-full">
+              <h3 className="font-syne font-bold text-white mb-2">Delete {deleteConfirm.name}?</h3>
+              <p className="text-[#8b9dc3] text-sm mb-4">Deleting <strong className="text-white">{deleteConfirm.name}</strong> will also delete all its grade data, notes, resources, and checklist items. Are you sure?</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 rounded-xl bg-navy-800 text-[#8b9dc3] font-semibold hover:bg-navy-700 transition-all">Cancel</button>
+                <button onClick={() => confirmDelete(deleteConfirm.id)} className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 text-white font-semibold transition-all">Delete</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Personalization */}
+        <section className="mb-6">
+          <h2 className="font-syne font-semibold text-[#8b9dc3] text-xs uppercase tracking-wider font-mono mb-3">Personalization</h2>
+          <div className="bg-navy-900 border border-navy-700 rounded-2xl p-4 space-y-4">
+            {/* Font picker */}
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-2">App Font</label>
+              <div className="flex gap-2">
+                {[
+                  { id: 'syne',    label: 'Syne',   desc: 'Modern' },
+                  { id: 'crimson', label: 'Crimson', desc: 'Academic' },
+                  { id: 'lora',    label: 'Lora',   desc: 'Scholarly' },
+                ].map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => dispatch({ type: 'SET_SETTINGS', payload: { font: f.id } })}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all flex flex-col items-center gap-0.5
+                      ${(state.settings?.font || 'syne') === f.id
+                        ? 'bg-blue-500/15 border-blue-500 text-blue-400'
+                        : 'bg-navy-800 border-navy-700 text-[#8b9dc3] hover:border-blue-500/50'}`}
+                  >
+                    <span>{f.label}</span>
+                    <span className="text-[10px] font-mono opacity-70">{f.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Theme toggle */}
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-2">Theme</label>
+              <div className="flex gap-2">
+                {[
+                  { id: 'dark',  label: '🌙 Dark' },
+                  { id: 'light', label: '☀️ Light' },
+                ].map(t => (
+                  <button
+                    key={t.id}
+                    onClick={() => dispatch({ type: 'SET_SETTINGS', payload: { theme: t.id } })}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all
+                      ${(state.settings?.theme || 'dark') === t.id
+                        ? 'bg-blue-500/15 border-blue-500 text-blue-400'
+                        : 'bg-navy-800 border-navy-700 text-[#8b9dc3] hover:border-blue-500/50'}`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Liquid Glass toggle */}
+            <div className="flex items-center justify-between py-1">
+              <div>
+                <p className="text-sm text-white font-semibold">💎 Liquid Glass</p>
+                <p className="text-xs text-[#8b9dc3] font-mono mt-0.5">Frosted glass cards & nav bar</p>
+              </div>
+              <button
+                onClick={() => dispatch({ type: 'SET_SETTINGS', payload: { glassMode: !(state.settings?.glassMode) } })}
+                className={`relative w-12 h-6 rounded-full border transition-all flex-shrink-0 ${
+                  state.settings?.glassMode
+                    ? 'bg-blue-500 border-blue-400'
+                    : 'bg-navy-800 border-navy-700'
+                }`}
+                aria-label="Toggle liquid glass mode"
+              >
+                <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+                  state.settings?.glassMode ? 'left-[calc(100%-1.375rem)]' : 'left-0.5'
+                }`} />
+              </button>
+            </div>
+
+            {/* Nav bar size */}
+            <div>
+              <label className="block text-xs text-[#8b9dc3] font-mono mb-2">Bottom Bar Size</label>
+              <div className="flex gap-2">
+                {[
+                  { id: 'compact', label: 'Compact' },
+                  { id: 'normal',  label: 'Normal'  },
+                  { id: 'large',   label: 'Large'   },
+                ].map(n => (
+                  <button
+                    key={n.id}
+                    onClick={() => dispatch({ type: 'SET_SETTINGS', payload: { navSize: n.id } })}
+                    className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all
+                      ${(state.settings?.navSize || 'normal') === n.id
+                        ? 'bg-blue-500/15 border-blue-500 text-blue-400'
+                        : 'bg-navy-800 border-navy-700 text-[#8b9dc3] hover:border-blue-500/50'}`}
+                  >
+                    {n.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Danger Zone */}
+        <section className="mb-6">
+          <h2 className="font-syne font-semibold text-red-400 text-xs uppercase tracking-wider font-mono mb-3">Danger Zone</h2>
+          <div className="bg-navy-900 border border-red-500/30 rounded-2xl p-4">
+            <p className="text-[#8b9dc3] text-sm mb-3">Permanently delete all data and return to onboarding.</p>
+            {resetConfirm === 0 && (
+              <button onClick={handleReset} className="w-full py-2.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-400 font-syne font-semibold hover:bg-red-500/25 transition-all">Reset App</button>
+            )}
+            {resetConfirm === 1 && (
+              <div>
+                <p className="text-red-400 text-sm font-semibold mb-2">⚠️ Are you sure? This cannot be undone.</p>
+                <div className="flex gap-2">
+                  <button onClick={() => setResetConfirm(0)} className="flex-1 py-2.5 rounded-xl bg-navy-800 text-[#8b9dc3] font-semibold hover:bg-navy-700 transition-all text-sm">Cancel</button>
+                  <button onClick={handleReset} className="flex-1 py-2.5 rounded-xl bg-red-500 hover:bg-red-400 text-white font-semibold transition-all text-sm">Yes, reset</button>
+                </div>
+              </div>
+            )}
+            {resetConfirm === 2 && (
+              <div>
+                <p className="text-red-400 text-sm font-semibold mb-2">🚨 Final confirmation – ALL data will be erased!</p>
+                <div className="flex gap-2">
+                  <button onClick={() => setResetConfirm(0)} className="flex-1 py-2.5 rounded-xl bg-navy-800 text-[#8b9dc3] font-semibold hover:bg-navy-700 transition-all text-sm">Cancel</button>
+                  <button onClick={handleReset} className="flex-1 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-all text-sm">ERASE EVERYTHING</button>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
