@@ -10,6 +10,7 @@ export default function Planner() {
   const { state, dispatch } = useApp();
   const [filter, setFilter] = useState('All');
   const [showAdd, setShowAdd] = useState(false);
+  const [editingAssignment, setEditingAssignment] = useState(null);
   const [view, setView] = useState('list'); // 'list' | 'calendar'
 
   const today = new Date();
@@ -108,6 +109,7 @@ export default function Planner() {
                           </div>
                         )}
                       </div>
+                      <button onClick={() => setEditingAssignment(a)} className="text-[#8b9dc3] hover:text-blue-400 text-sm px-1" title="Edit">✎</button>
                       <button onClick={() => del(a.id)} className="text-[#8b9dc3] hover:text-red-400 text-sm px-1">×</button>
                     </div>
                   </div>
@@ -119,6 +121,7 @@ export default function Planner() {
       )}
 
       <AddAssignmentModal open={showAdd} onClose={() => setShowAdd(false)} />
+      <AddAssignmentModal open={Boolean(editingAssignment)} onClose={() => setEditingAssignment(null)} initial={editingAssignment} />
     </div>
   );
 }

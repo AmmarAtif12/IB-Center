@@ -41,16 +41,22 @@ export default function AddAssignmentModal({ open, onClose, initial }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, initial, state.subjects]);
 
+  const isEdit = Boolean(initial?.id);
+
   const save = () => {
     if (!form.title.trim()) return;
-    dispatch({ type: 'ADD_ASSIGNMENT', assignment: { ...form, id: crypto.randomUUID(), completed: false } });
+    if (isEdit) {
+      dispatch({ type: 'UPDATE_ASSIGNMENT', assignment: { ...form } });
+    } else {
+      dispatch({ type: 'ADD_ASSIGNMENT', assignment: { ...form, id: crypto.randomUUID(), completed: false } });
+    }
     onClose();
   };
 
   const up = (k, v) => setForm(f => ({ ...f, [k]: v }));
 
   return (
-    <Modal open={open} onClose={onClose} title="Add Assignment">
+    <Modal open={open} onClose={onClose} title={isEdit ? 'Edit Assignment' : 'Add Assignment'}>
       <div className="space-y-3">
         <div>
           <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Subject</label>
@@ -97,7 +103,7 @@ export default function AddAssignmentModal({ open, onClose, initial }) {
           <label className="block text-xs text-[#8b9dc3] font-mono mb-1">Notes</label>
           <textarea className="w-full bg-navy-800 border border-navy-700 rounded-xl px-4 py-3 text-white placeholder-[#8b9dc3] focus:outline-none focus:border-blue-500 resize-none h-20" placeholder="Optional notes..." value={form.notes} onChange={e => up('notes', e.target.value)} />
         </div>
-        <button onClick={save} disabled={!form.title.trim()} className="w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-syne font-semibold disabled:opacity-40 transition-all">Add Assignment</button>
+        <button onClick={save} disabled={!form.title.trim()} className="w-full py-3 rounded-xl bg-blue-500 hover:bg-blue-400 text-white font-syne font-semibold disabled:opacity-40 transition-all">{isEdit ? 'Save Changes' : 'Add Assignment'}</button>
       </div>
     </Modal>
   );
